@@ -3,10 +3,6 @@
 		{
 			"name": "ev_charging_analysis",
 			"path": "."
-		},
-		{
-			"name": "ACSDT5Y2022.B25024_2024-06-20T103601",
-			"path": "../../Downloads/ACSDT5Y2022.B25024_2024-06-20T103601"
 		}
 	],
 	"settings": {}
