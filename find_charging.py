@@ -16,7 +16,7 @@ def find_ev_charging(G, location, walking_distance= WALK_DIST):
 
     charger_types = ['ev_dc_fast_num', 'ev_level1_evse_num', 'ev_level2_evse_num']
 
-    response = requests.get(format_request(location), walking_distance)
+    response = requests.get(format_request(location, walking_distance))
 
     for station in response.json()['fuel_stations']:
         ev_loc = (station['latitude'], station['longitude'])
