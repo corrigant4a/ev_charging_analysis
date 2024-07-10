@@ -3,9 +3,6 @@
 		{
 			"name": "ev_charging_analysis",
 			"path": "."
-		},
-		{
-			"path": "../../Downloads/simplemaps_uszips_basicv1.85"
 		}
 	],
 	"settings": {}
