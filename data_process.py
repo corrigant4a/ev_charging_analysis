@@ -28,7 +28,7 @@ housing_data = pd.read_csv('Community_Survey/Survey_Data.csv')
 np.argwhere(j40_data['Census tract 2010 ID'].values == 37103920100)[0,0]
 np.argwhere(housing_data['Geography'].values == "1400000US37103920100")[0,0]
 
-cond_housing_data = pd.DataFrame({"Number People in Census Tract": housing_data["Estimate!!Total:"], "Single Person Home": housing_data.iloc[:,4:8:2].sum(axis = 1), "2+ Person or Unconventional Home": housing_data.iloc[:,8:-1:2].sum(axis = 1)})
+cond_housing_data = pd.DataFrame({"Number People in Census Tract": housing_data["Estimate!!Total:"], "Single Dwelling Home": housing_data.iloc[:,4:8:2].sum(axis = 1), "2+ Dwelling or Unconventional Home": housing_data.iloc[:,8:-1:2].sum(axis = 1)})
 
 
 
