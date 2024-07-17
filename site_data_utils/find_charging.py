@@ -1,7 +1,7 @@
 import requests
-from nearby_amenities import test_walking_distance
+from .nearby_amenities import test_walking_distance
 from global_params import *
-from api_keys import nrel_key
+from api_files.api_keys import nrel_key
 import pandas as pd
 
 
@@ -29,3 +29,4 @@ def find_ev_charging(G, location, walking_distance= WALK_DIST):
 
 
     return pd.Series(site_stats)
+

@@ -2,7 +2,7 @@
 from pygris.geocode import geolookup
 import pandas as pd
 import numpy as np
-
+from locational_data.get_data import j40_data, housing_data, dot_data, dot_ddict
 
 
 relev_disad = """PM2.5 in the air (percentile)
@@ -20,8 +20,7 @@ def get_census_num(location):
     return int(geolookup(location[1], location[0])['GEOID'][0][:11])
 
 
-j40_data = pd.read_csv('j40_data.csv')
-housing_data = pd.read_csv('Community_Survey/Survey_Data.csv')
+
 # print(community_data.keys)
 # 484299502001041 in community_data['Census tract 2010 ID'].values
 
