@@ -67,6 +67,9 @@ def row_num(dataset, census_id_key, census_num):
 
 
 def get_dot_info(census_num):
+    if dot_data is None:
+        print('DOT data not found. File is too large to be included, so user must use local version of file. File can be found at site https://www.transportation.gov/priorities/equity/justice40/download-data')
+        return pd.Series({})
     row = row_num(dot_data, 'trctfp', census_num)
     coded_dot_data = dot_data[relev_dot_data_fields_dict.values()].iloc[row]
     return pd.Series({key: coded_dot_data[value] for key, value in relev_dot_data_fields_dict.items()})
