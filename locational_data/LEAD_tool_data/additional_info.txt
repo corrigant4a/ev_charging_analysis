@@ -1,0 +1,7 @@
+"Created at:","Jul 17, 2024"
+"Applied Filters:"
+"Area Median Income","0 - 30%; 30 - 60%; 60 - 80%; 80 - 100%; 100 - 150%; 150%+"
+"Building Age","Before 1940; 1940 - 59; 1960 - 79; 1980 - 99; 2000 - 19; 2020+"
+"Heating Fuel Type","Utility Gas; Bottled Gas; Electricity; Fuel Oil; Coal; Wood; Solar; Other; None"
+"Building Type","1 unit detached; 1 unit attached; 2 units; 3 - 4 units; 5 - 9 units; 10 - 19 units; 20 - 49 units; 50+ units; Boat/RV/Van; Mobile/Trailer"
+Rent/Own,"Renter-occupied; Owner-occupied"
