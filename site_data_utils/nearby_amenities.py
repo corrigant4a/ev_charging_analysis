@@ -28,6 +28,12 @@ tags = {"amenities": amenity_tags,
 
 def test_walking_distance(G, location, test_loc, walking_distance):
 
+    """G: graph
+    location: coords in (lat, long) format
+    test_loc: coords of secondary location as (lat, long)
+    walking_distance: max allowed walking distance
+    
+    returns True if network walking distance is <= walking_distance, False otherwise """
 
     node1, dist1 = ox.distance.nearest_nodes(G, X = location[1], Y = location[0], return_dist = True)
     node2, dist2 = ox.distance.nearest_nodes(G, X = test_loc[1], Y = test_loc[0], return_dist = True)
@@ -37,21 +43,22 @@ def test_walking_distance(G, location, test_loc, walking_distance):
 
     total_dist = dist1 + sum(edges['length']) + dist2
 
-    return total_dist < walking_distance
+    return total_dist <= walking_distance
        
+
 def find_nearby_poi(G, location, walking_distance = 500, tags = tags):
     """
     
-    location is the latitude, longitude of the target location
+    location: is the latitude, longitude of the target location
     
-    walking distance is the allowed distance to walk in meters
+    walking_distance: is the allowed distance to walk in meters
     
-    tags is a dictionary of types of points of interest as keys (poi) 
+    tags: is a dictionary of types of points of interest as keys (poi) 
     with the values as further dictionaries 
     Those subdictionaries have osmnx tags as keys and lists of instances 
     of those tags as values
 
-    returns a dictionary with type of point of interest as keys and number of relevant locations as values"""
+    returns a pd Sereies with type of point of interest as keys and number of relevant locations as values"""
     
     points_of_interest = {}
 

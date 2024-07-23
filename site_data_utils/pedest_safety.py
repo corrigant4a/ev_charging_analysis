@@ -11,10 +11,14 @@ for way_type in highway_types[:7]:
 
 
 fatal_like_speed_data = np.array([[16, 23, 31, 39, 46], [0.1, 0.25, 0.5, 0.75, 0.9]])
-fatal_like_speed = lambda x: np.interp(x, fatal_like_speed_data[0], fatal_like_speed_data[1])
+#this data is from a t4a source, should be linked in code
 
+fatal_like_speed = lambda x: np.interp(x, fatal_like_speed_data[0], fatal_like_speed_data[1])
+#linearly interpolates  fatality daty
 
 def safety_info(location):
+    """location: coordinates in (lat, long) format
+    returns Series with max speed of adjacent road and fatality likelihood for a pedestrian hit by a car at that maxspeed"""
     try:
         nodes = ox.features.features_from_point(center_point= location, dist = 100, tags = {"highway": highway_types})
 

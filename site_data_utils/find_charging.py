@@ -9,23 +9,32 @@ try:
 
 
 
-    def format_request(location, walking_distance):
+    def nrel_request(location, walking_distance):
+        """location: coordinates in (lat, long) tuple
+        walking_distance: allowed distance from location (in meters)
+        returns NREL charging site data within walking_distance of location in JSON format"""
         request_params = {'api_key': nrel_key, 'fuel_type': 'ELEC', 'latitude': location[0], 'longitude': location[1], 'radius': walking_distance * MILES_PER_METER, 'limit': 50}
 
-        return 'https://developer.nrel.gov/api/alt-fuel-stations/v1/nearest.json?' + ''.join([f'{key}={value}&' for key, value in request_params.items()])
+        return requests.get('https://developer.nrel.gov/api/alt-fuel-stations/v1/nearest.json?' + ''.join([f'{key}={value}&' for key, value in request_params.items()])).json()
 
     def find_ev_charging(G, location, walking_distance= WALK_DIST):
+        """G: graph
+        location: coords as (lat, long)
+        walking_distance: distance from location in meters
+        returns numbers of stations of each type within walking_distance meters of location"""
 
         site_stats = {'Number of Stations': 0, 'ev_dc_fast_num': 0, 'ev_level1_evse_num': 0, 'ev_level2_evse_num': 0}
 
         charger_types = ['ev_dc_fast_num', 'ev_level1_evse_num', 'ev_level2_evse_num']
 
-        response = requests.get(format_request(location, walking_distance))
+        response = nrel_request(location, walking_distance)
 
-        for station in response.json()['fuel_stations']:
+        for station in response['fuel_stations']:
             ev_loc = (station['latitude'], station['longitude'])
 
             if test_walking_distance(G, location, ev_loc, walking_distance):
+                 #check that station is within network walking distance rather than
+                 #Euclidean distance which is returned by the NREL API
                 site_stats['Number of Stations'] += 1 
 
                 for charge_type in charger_types:

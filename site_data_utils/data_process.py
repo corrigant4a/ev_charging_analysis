@@ -2,7 +2,7 @@
 from pygris.geocode import geolookup
 import pandas as pd
 import numpy as np
-from locational_data.get_data import j40_data, housing_data, dot_data, lead_data
+from site_data_utils.locational_data.get_data import j40_data, housing_data, dot_data, lead_data
 
 
 relev_j40_disad = """PM2.5 in the air (percentile)
@@ -51,6 +51,9 @@ relev_lead_fields = [r"Energy Burden (% income)","Avg. Annual Energy Cost ($)","
 
 relev_dot_data_fields_dict = {}
 
+cond_housing_data = pd.DataFrame({"Number People in Census Tract": housing_data["Estimate!!Total:"], "Single Dwelling Home": housing_data.iloc[:,4:8:2].sum(axis = 1), "2+ Dwelling or Unconventional Home": housing_data.iloc[:,8:-1:2].sum(axis = 1)})
+
+
 for i, line in enumerate(relev_dot_data_fields.split('\n')):
     if i%2 == 0:
         key = line 
@@ -59,37 +62,54 @@ for i, line in enumerate(relev_dot_data_fields.split('\n')):
         relev_dot_data_fields_dict[key] = val
 
 def get_census_num(location):
+    """location: Inputs the location at (lat, long)
+    outputs the census tract number
+    the geolookup gives a longer number with more information than is necessary"""
     return int(geolookup(location[1], location[0])['GEOID'][0][:11])
 
 def row_num(dataset, census_id_key, census_num):
+    """dataset: is the DataFrame with all the information in it
+    census_id_key: is the key for dataset that gives the cencus tract number
+    census_num: is the census number being queried
+    returns the row index of dataset that contains the information of the given census_num"""
+    
     return np.argwhere(dataset[census_id_key].values == census_num)[0,0]
 
 
-
 def get_dot_info(census_num):
+    """takes census_num and outputs all DOT info in a DataFrama"""
     if dot_data is None:
         print('DOT data not found. File is too large to be included, so user must use local version of file. File can be found at site https://www.transportation.gov/priorities/equity/justice40/download-data')
         return pd.Series({})
+   
     row = row_num(dot_data, 'trctfp', census_num)
+    
     coded_dot_data = dot_data[relev_dot_data_fields_dict.values()].iloc[row]
+    
     return pd.Series({key: coded_dot_data[value] for key, value in relev_dot_data_fields_dict.items()})
 
 def get_lead_info(census_num):
+    """takes census_num and outputs all LEAD info in a DataFrama"""
+
     row = row_num(lead_data, "Geography ID", census_num)
     return lead_data[relev_lead_fields].iloc[row]
 
 
 def get_j40_info(census_num):
+    """takes census_num and outputs all J40 info in a DataFrama"""
+
     row = row_num(j40_data, 'Census tract 2010 ID', census_num)
     return j40_data[relev_j40_disad].iloc[row]
 
-cond_housing_data = pd.DataFrame({"Number People in Census Tract": housing_data["Estimate!!Total:"], "Single Dwelling Home": housing_data.iloc[:,4:8:2].sum(axis = 1), "2+ Dwelling or Unconventional Home": housing_data.iloc[:,8:-1:2].sum(axis = 1)})
 
 def get_housing_info(census_num):
+    """takes census_num and outputs all ACS housing info in a DataFrama"""
+
     row = row_num(housing_data,'Geography',f"1400000US{census_num}")
     return cond_housing_data.iloc[row]
 
 def census_tract_data(location):
+    """takes location and returns all the relevant information as a DataFrame"""
     census_num = get_census_num(location)
     if census_num in j40_data['Census tract 2010 ID'].values:
         return pd.concat([pd.Series({'Location in Census Tract': True}), get_j40_info(census_num), get_housing_info(census_num), get_dot_info(census_num), get_lead_info(census_num)])
