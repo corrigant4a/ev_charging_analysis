@@ -17,7 +17,7 @@ try:
 
         return requests.get('https://developer.nrel.gov/api/alt-fuel-stations/v1/nearest.json?' + ''.join([f'{key}={value}&' for key, value in request_params.items()])).json()
 
-    def find_ev_charging(G, location, walking_distance= WALK_DIST):
+    def find_ev_charging(G, location, walking_distance= WALK_DIST, debug = False):
         """G: graph
         location: coords as (lat, long)
         walking_distance: distance from location in meters
@@ -32,7 +32,7 @@ try:
         for station in response['fuel_stations']:
             ev_loc = (station['latitude'], station['longitude'])
 
-            if test_walking_distance(G, location, ev_loc, walking_distance):
+            if test_walking_distance(G, location, ev_loc, walking_distance, debug = debug):
                  #check that station is within network walking distance rather than
                  #Euclidean distance which is returned by the NREL API
                 site_stats['Number of Stations'] += 1 

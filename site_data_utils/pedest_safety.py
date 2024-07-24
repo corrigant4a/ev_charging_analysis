@@ -16,7 +16,7 @@ fatal_like_speed_data = np.array([[16, 23, 31, 39, 46], [0.1, 0.25, 0.5, 0.75, 0
 fatal_like_speed = lambda x: np.interp(x, fatal_like_speed_data[0], fatal_like_speed_data[1])
 #linearly interpolates  fatality daty
 
-def safety_info(location):
+def safety_info(location, debug = False):
     """location: coordinates in (lat, long) format
     returns Series with max speed of adjacent road and fatality likelihood for a pedestrian hit by a car at that maxspeed"""
     try:

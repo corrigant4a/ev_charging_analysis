@@ -80,7 +80,7 @@ def get_dot_info(census_num):
     """takes census_num and outputs all DOT info in a DataFrama"""
     if dot_data is None:
         print('DOT data not found. File is too large to be included, so user must use local version of file. File can be found at site https://www.transportation.gov/priorities/equity/justice40/download-data')
-        return pd.Series({})
+        return pd.Series({key: None for key, _ in relev_dot_data_fields_dict.items()})
    
     row = row_num(dot_data, 'trctfp', census_num)
     
@@ -108,7 +108,7 @@ def get_housing_info(census_num):
     row = row_num(housing_data,'Geography',f"1400000US{census_num}")
     return cond_housing_data.iloc[row]
 
-def census_tract_data(location):
+def census_tract_data(location, debug = False):
     """takes location and returns all the relevant information as a DataFrame"""
     census_num = get_census_num(location)
     if census_num in j40_data['Census tract 2010 ID'].values:

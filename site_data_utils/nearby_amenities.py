@@ -26,7 +26,7 @@ tags = {"amenities": amenity_tags,
 
 
 
-def test_walking_distance(G, location, test_loc, walking_distance):
+def test_walking_distance(G, location, test_loc, walking_distance, debug = False):
 
     """G: graph
     location: coords in (lat, long) format
@@ -35,9 +35,30 @@ def test_walking_distance(G, location, test_loc, walking_distance):
     
     returns True if network walking distance is <= walking_distance, False otherwise """
 
+
+    if ox.distance.great_circle(lat1 = location[0], lon1 = location[1], lat2 = test_loc[0], lon2 = test_loc[1]) < 50:
+         return True
+    #if the distance is very short there may be no actual walking path between the nodes even though it is walkable. 
+
+
     node1, dist1 = ox.distance.nearest_nodes(G, X = location[1], Y = location[0], return_dist = True)
     node2, dist2 = ox.distance.nearest_nodes(G, X = test_loc[1], Y = test_loc[0], return_dist = True)
 
+    if debug:
+         def pick_color(node_id):
+              if node_id == node1:
+                   return 'red'
+              elif node_id == node2:
+                   return 'green'
+              return 'black'
+         
+         ox.plot_graph(G, node_color=[pick_color(node) for node in G.nodes])
+         print(f'node1 {node1} \n node2 {node2}')
+    
+    if node1 == node2:
+         return True
+    #if both locations are the same node the walking time is minimal
+    
     route = ox.routing.shortest_path(G, node1, node2, weight='length', cpus=1)
     edges = ox.routing.route_to_gdf(G, route, weight = 'length')
 
@@ -46,7 +67,7 @@ def test_walking_distance(G, location, test_loc, walking_distance):
     return total_dist <= walking_distance
        
 
-def find_nearby_poi(G, location, walking_distance = 500, tags = tags):
+def find_nearby_poi(G, location, walking_distance = 500, tags = tags, debug = False):
     """
     
     location: is the latitude, longitude of the target location
@@ -75,7 +96,7 @@ def find_nearby_poi(G, location, walking_distance = 500, tags = tags):
                 for i in range(num_amenities_euc):
                     query = f'{gdf["addr:housenumber"].iloc[i]} {gdf["addr:street"].iloc[i]}, {gdf["addr:city"].iloc[i]} {gdf["addr:state"].iloc[i]}, {gdf["addr:postcode"].iloc[i]} '
                     amenity_loc  = ox.geocoder.geocode(query)
-                    num_poi += test_walking_distance(G, location=location, amenity_loc= amenity_loc, walking_distance = walking_distance)
+                    num_poi += test_walking_distance(G, location=location, amenity_loc= amenity_loc, walking_distance = walking_distance, debug = debug)
                         
 
         except:
