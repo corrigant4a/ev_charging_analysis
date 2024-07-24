@@ -34,7 +34,7 @@ for i, address in enumerate(raw_data['Address']):
 
 
 # %%
-loc_data.to_csv('site_coords.csv', sep = ';', columns= ['Address', 'Latitude', 'Longitude'], index = False)
+loc_data.to_csv('Existing_Site_Data/site_coords.csv', sep = ';', columns= ['Address', 'Latitude', 'Longitude'], index = False)
 
 
 
