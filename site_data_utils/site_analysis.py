@@ -1,5 +1,6 @@
 import osmnx as ox
 import pandas as pd
+from pygris.geocode import geocode as pygeocode
 
 from site_data_utils.nearby_amenities import find_nearby_poi
 from site_data_utils.pedest_safety import safety_info
@@ -12,14 +13,34 @@ from global_params import *
 
 
 
-def get_info(location, output = "DataFrame", debug = False):
+def get_info(location_, output = "DataFrame", debug = False):
 
     """location: coords as (lat, long)
     output: either 'DataFrame' or 'JSON', specifies return format for data 
     debug: boolean whether to do in debug mode"""
 
+    exceptions = []
+
     if output != 'DataFrame' and output != 'JSON':
         raise Exception('output argument must be "DataFrame" or "JSON"')
+    
+    if type(location_) is str:
+        try:
+            loc_info = pygeocode(location_)
+            location = (loc_info.latitude, loc_info.longitude)
+        except Exception as e1:
+            if debug:
+                print(e1)
+                exceptions.append(e1)
+            print(location_)
+            try:
+                location = ox.geocoder.geocode(location_)
+            except Exception as e2:
+                print('Could not geocode latitude and longitude')
+                exceptions.append(e2)
+                return None, exceptions
+    else:
+        location = location_
 
     G = ox.graph_from_point(center_point = location, dist = WALK_DIST, network_type= 'walk')
     #creates osmnx graph of nearby walking network
@@ -36,6 +57,6 @@ def get_info(location, output = "DataFrame", debug = False):
     data_frame = pd.concat([tract_data, loc_safety_info, nearby_poi, nearby_charging_sites])
 
     if output == "DataFrame":
-        return data_frame
+        return data_frame, None
     elif output == "JSON":
-        return data_frame.to_json()
+        return data_frame.to_json(), None
