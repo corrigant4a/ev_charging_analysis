@@ -28,6 +28,7 @@ def get_info(location_, output = "DataFrame", debug = False):
         try:
             loc_info = pygeocode(location_)
             location = (loc_info.latitude, loc_info.longitude)
+
         except Exception as e1:
             if debug:
                 print(e1)
@@ -35,12 +36,17 @@ def get_info(location_, output = "DataFrame", debug = False):
             print(location_)
             try:
                 location = ox.geocoder.geocode(location_)
+
             except Exception as e2:
                 print('Could not geocode latitude and longitude')
                 exceptions.append(e2)
                 return None, exceptions
+        address_info = pd.Series({'Address': location_, 'Latitude': location[0], 'Longitude': location[1]})
+ 
     else:
         location = location_
+
+        address_info = pd.Series({'Latitude': location[0], 'Longitude': location[1]})
 
     G = ox.graph_from_point(center_point = location, dist = WALK_DIST, network_type= 'walk')
     #creates osmnx graph of nearby walking network
@@ -54,7 +60,7 @@ def get_info(location_, output = "DataFrame", debug = False):
     nearby_charging_sites = find_ev_charging(G, location, walking_distance = WALK_DIST, debug = debug)
     #gets all relevant data from each function
 
-    data_frame = pd.concat([tract_data, loc_safety_info, nearby_poi, nearby_charging_sites])
+    data_frame = pd.concat([address_info, tract_data, loc_safety_info, nearby_poi, nearby_charging_sites])
 
     if output == "DataFrame":
         return data_frame, None
